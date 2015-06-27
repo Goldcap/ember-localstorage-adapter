@@ -6,7 +6,7 @@ Status](https://travis-ci.org/kurko/ember-localstorage-adapter.svg?branch=master
 
 Store your ember application data in localStorage.
 
-Compatible with Ember Data 1.0.beta.16
+Compatible with Ember Data 1.0.beta.6.
 
 **NOTE**: New versions of the `localStorage` adapter are no longer compatible
 with older versions of Ember Data. For older versions, checkout the `pre-beta`
@@ -27,7 +27,15 @@ App.ApplicationAdapter = DS.LSAdapter.extend({
 If you are using Ember Localstorage Adapter within an Ember CLI project you can install it as an addon with the following command:
 
 ```sh
-ember install:bower ember-localstorage-adapter
+npm install --save-dev ember-localstorage-adapter
+```
+
+Then in Brocfile.js import it before module.exports:
+
+```js
+app.import('bower_components/ember-localstorage-adapter/localstorage_adapter.js');
+
+module.exports = app.toTree();
 ```
 
 ### Local Storage Namespace
@@ -43,7 +51,7 @@ DS.LSAdapter.create({
 ### Models
 
 Whenever the adapter returns a record, it'll also return all
-relationships, so __do not__ use `{async: true}` in your model definitions.
+relationships, so __do not__ use `{async: true}` in you model definitions.
 
 #### Namespace
 
@@ -68,16 +76,6 @@ App.store.adapter.on('QUOTA_EXCEEDED_ERR', function(records){
 });
 
 App.store.commit();
-```
-
-### Local Storage Unavailable
-
-When `localStorage` is not available (typically because the user has explicitly disabled it), the adapter will keep records in memory. When the adapter first discovers that this is the case, it will trigger a `persistenceUnavailable` event, which the application may use to take any necessary actions.
-
-```js
-adapter.on('persistenceUnavailable', function() {
-  // Maybe notify the user that their data won't live past the end of the current session
-});
 ```
 
 Todo

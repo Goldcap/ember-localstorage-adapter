@@ -1,6 +1,6 @@
 {
   "name": "ember-localstorage-adapter",
-  "version": "0.5.4",
+  "version": "0.5.0",
   "description": "Store your Ember application data in LocalStorage.",
   "main": "localstorage_adapter.js",
   "directories": {
@@ -20,14 +20,21 @@
     "main": "ember-addon-main.js",
     "after": "ember-data"
   },
-  "author": "Ryan Florence <rpflorence@gmail.com>",
-  "contributors": [{
-    "name": "Alexandre de Oliveira",
-    "email": "chavedomundo@gmail.com"
-  }],
+  "author": {
+    "name": "Ryan Florence",
+    "email": "rpflorence@gmail.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kurko/ember-localstorage-adapter/issues"
   },
-  "homepage": "https://github.com/kurko/ember-localstorage-adapter"
+  "homepage": "https://github.com/kurko/ember-localstorage-adapter",
+  "readme": "Ember Data Local Storage Adapter\n================================\n\n[![Build\nStatus](https://travis-ci.org/kurko/ember-localstorage-adapter.svg?branch=master)](https://travis-ci.org/kurko/ember-localstorage-adapter)\n\nStore your ember application data in localStorage.\n\nCompatible with Ember Data 1.0.beta.6.\n\n**NOTE**: New versions of the `localStorage` adapter are no longer compatible\nwith older versions of Ember Data. For older versions, checkout the `pre-beta`\nbranch.\n\nUsage\n-----\n\nInclude `localstorage_adapter.js` in your app and then like all adapters:\n\n```js\nApp.ApplicationSerializer = DS.LSSerializer.extend();\nApp.ApplicationAdapter = DS.LSAdapter.extend({\n    namespace: 'yournamespace'\n});\n```\n\nIf you are using Ember Localstorage Adapter within an Ember CLI project you can install it as an addon with the following command:\n\n```sh\nnpm install --save-dev ember-localstorage-adapter\n```\n\nThen in Brocfile.js import it before module.exports:\n\n```js\napp.import('bower_components/ember-localstorage-adapter/localstorage_adapter.js');\n\nmodule.exports = app.toTree();\n```\n\n### Local Storage Namespace\n\nAll of your application data lives on a single `localStorage` key, it defaults to `DS.LSAdapter` but if you supply a `namespace` option it will store it there:\n\n```js\nDS.LSAdapter.create({\n  namespace: 'my app'\n});\n```\n\n### Models\n\nWhenever the adapter returns a record, it'll also return all\nrelationships, so __do not__ use `{async: true}` in you model definitions.\n\n#### Namespace\n\nIf your model definition has a `url` property, the adapter will store the data on that namespace. URL is a weird term in this context, but it makes swapping out adapters simpler by not requiring additional properties on your models.\n\n```js\nvar List = DS.Model.extend({\n  // ...\n});\nList.reopen({\n  url: '/some/url'\n});\n```\n\n### Quota Exceeded Handler\n\nBrowser's `localStorage` has limited space, if you try to commit application data and the browser is out of space, then the adapter will trigger the `QUOTA_EXCEEDED_ERR` event.\n\n```js\nApp.store.adapter.on('QUOTA_EXCEEDED_ERR', function(records){\n  // do stuff\n});\n\nApp.store.commit();\n```\n\nTodo\n----\n\n- Make the repo nicer to work with long-term (do something more intelligent with dependencies found in `vendor`, etc.)\n\nTests\n-----\n\nIf you don't have bower, install it with\n\n    npm install bower -g\n\nThen install the dependencies with\n\n    bower install\n\nOpen `test/index.html` in a browser. If you have `phantomjs` installed,\nrun\n\n    phantomjs test/runner.js test/index.html\n\nLicense & Copyright\n-------------------\n\nCopyright (c) 2012 Ryan Florence\nMIT Style license. http://opensource.org/licenses/MIT\n",
+  "readmeFilename": "README.md",
+  "_id": "ember-localstorage-adapter@0.5.0",
+  "dist": {
+    "shasum": "4fb8c6d3e2896813eda59d606da4b99acbae0b5a"
+  },
+  "_from": "ember-localstorage-adapter@",
+  "_resolved": "https://registry.npmjs.org/ember-localstorage-adapter/-/ember-localstorage-adapter-0.5.0.tgz"
 }

@@ -43,47 +43,27 @@ var cl = function(msg) { console.log(msg); }
 var ct = function(msg) { console.table(msg); }
 
 var setupStore = function(options) {
-  var container, registry;
   var env = {};
   options = options || {};
 
-  if (Ember.Registry) {
-    registry = env.registry = new Ember.Registry();
-    container = env.container = registry.container();
-  } else {
-    container = env.container = new Ember.Container();
-    registry = env.registry = container;
-  }
-
-  env.replaceContainerNormalize = function replaceContainerNormalize(fn) {
-    if (env.registry) {
-      env.registry.normalize = fn;
-    } else {
-      env.container.normalize = fn;
-    }
-  };
+  var container = env.container = new Ember.Container();
 
   var adapter = env.adapter = (options.adapter || DS.Adapter);
   delete options.adapter;
 
-  if (typeof adapter !== 'string') {
-    env.registry.register('adapter:-default', adapter);
-    adapter = '-default';
-  }
-
   for (var prop in options) {
-    registry.register('model:' + Ember.String.dasherize(prop), options[prop]);
+    container.register('model:' + prop, options[prop]);
   }
 
-  registry.register('store:main', DS.Store.extend({
+  container.register('store:main', DS.Store.extend({
     adapter: adapter
   }));
 
-  registry.register('serializer:-default', DS.LSSerializer);
-  registry.register('serializer:-rest', DS.RESTSerializer);
-  registry.register('adapter:-rest', DS.RESTAdapter);
+  container.register('serializer:-default', DS.LSSerializer);
+  container.register('serializer:-rest', DS.RESTSerializer);
+  container.register('adapter:-rest', DS.RESTAdapter);
 
-  registry.injection('serializer', 'store', 'store:main');
+  container.injection('serializer', 'store', 'store:main');
 
   env.serializer = container.lookup('serializer:-default');
   env.restSerializer = container.lookup('serializer:-rest');

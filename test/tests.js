@@ -2,7 +2,7 @@
 var get = Ember.get,
     App = {};
 
-var store, registry;
+var store;
 
 function stringify(string){
   return function(){ return string };
@@ -50,7 +50,6 @@ module('DS.LSAdapter', {
       adapter: DS.LSAdapter
     });
     store = env.store;
-    registry = env.registry;
   }
 });
 
@@ -386,7 +385,7 @@ test('saves hasMany', function() {
 });
 
 test("serializeHasMany respects keyForRelationship", function() {
-  registry.register('serializer:list', DS.LSSerializer.extend({
+  store.get('container').register('serializer:list', DS.LSSerializer.extend({
     keyForRelationship: function(key, type) {
       return key.toUpperCase();
     }
@@ -395,21 +394,20 @@ test("serializeHasMany respects keyForRelationship", function() {
   list = store.createRecord('list', { name: "Rails is omakase", id: "1"});
   comment = store.createRecord('item', { name: "Omakase is delicious", list: list, id: "1"});
   var json = {};
-  var snapshot = list._createSnapshot();
 
-  store.get('container').lookup("serializer:list").serializeHasMany(snapshot, json, {key: "items", options: {}});
+  store.get('container').lookup("serializer:list").serializeHasMany(list, json, {key: "items", options: {}});
 
   deepEqual(json, {
     ITEMS: ["1"]
   });
 
-  registry.unregister('serializer:list')
+  store.get('container').unregister('serializer:list')
 });
 
 test("extractArray calls extractSingle", function() {
   var callback = sinon.stub();
 
-  registry.register('serializer:list', DS.LSSerializer.extend({
+  store.get('container').register('serializer:list', DS.LSSerializer.extend({
     extractSingle: function(store, type, payload) {
       callback();
       return this.normalize(type, payload);
@@ -425,7 +423,7 @@ test("extractArray calls extractSingle", function() {
     start();
   });
 
-  registry.unregister('serializer:list')
+  store.get('container').unregister('serializer:list')
 });
 
 test('date is loaded correctly', function() {
@@ -444,33 +442,7 @@ test('date is loaded correctly', function() {
       start();
     });
   });
-});
-
-test('handles localStorage being unavailable', function() {
-  expect(3);
-
-  var handler = sinon.spy();
-  var adapter = store.get('defaultAdapter');
-  var exception = new Error('Nope.');
-
-  // We can't actually disable localStorage in PhantomJS, so emulate as closely as possible by
-  // causing a wrapper method on the adapter to throw.
-  adapter.getNativeStorage = function() { throw exception; };
-  adapter.on('persistenceUnavailable', handler);
-
-  var person = store.createRecord('person', { id: 'tom', name: 'Tom' });
-  ok(handler.notCalled, 'Should not trigger `persistenceUnavailable` until actually trying to persist');
-
-  stop();
-  person.save().then(function() {
-    ok(handler.calledWith(exception), 'Saving a record without local storage should trigger `persistenceUnavailable`');
-    store.unloadRecord(person);
-    return store.find('person', 'tom');
-  }).then(function(reloadedPerson) {
-    equal(reloadedPerson.get('name'), 'Tom', 'Records should still persist in-memory without local storage');
-    start();
-  });
-});
+})
 
 // This crashes chrome.
 // TODO: Figure out a way to test this without using so much memory.
